@@ -942,3 +942,114 @@ button {
 .modal-close:hover {
   color: #ff4d4f;
 }
+/* =========================
+   MOBILE RESPONSIVE FIXES
+   ========================= */
+@media (max-width: 768px) {
+
+  /* NAVBAR */
+  .premium-nav {
+    flex-direction: column;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 0.9rem;
+  }
+
+  .nav-right {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* MAIN LAYOUT */
+  .main-layout {
+    display: block;
+  }
+
+  /* NEWS PANEL */
+  .crypto-news {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .news-item a {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* CENTER CONTENT */
+  .container {
+    width: 100%;
+    padding: 12px;
+  }
+
+  /* CARDS */
+  .card {
+    padding: 14px;
+  }
+
+  .card input {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+
+  .card button {
+    font-size: 0.95rem;
+    padding: 12px;
+  }
+
+  /* RESULT BOX */
+  .result {
+    font-size: 0.9rem;
+  }
+
+  /* PORTFOLIO */
+  .portfolio-box {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .portfolio-item {
+    font-size: 0.85rem;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* FLOATING COINS — HIDE ON MOBILE */
+  .btc-coin {
+    display: none;
+  }
+
+  /* ADS */
+  .ads-box {
+    width: 100%;
+    margin-top: 16px;
+  }
+
+}
+.main-layout {
+  display: flex;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+  }
+}
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .app-title {
+    font-size: 1.2rem;
+  }
+}
+
