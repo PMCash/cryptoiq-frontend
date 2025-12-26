@@ -1,0 +1,944 @@
+/* ----------------------------------------------------
+   GLOBAL RESET + BASE
+---------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  color: var(--text);
+  background: url("/bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  font-family: system-ui, -apple-system, "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ----------------------------------------------------
+   THEME VARIABLES
+---------------------------------------------------- */
+:root {
+  --bg: rgba(255, 255, 255, 0.85);
+  --text: #111;
+  --card: rgba(255, 255, 255, 0.85);
+  --nav-bg: rgba(255, 255, 255, 0.08);
+  --result-bg: #5233d0;
+}
+
+/* DARK MODE */
+[data-theme="dark"] {
+  --bg: rgba(20,20,20,0.85);
+  --text: #f2f2f2;
+  --card: rgba(35,35,35,0.7);
+  --nav-bg: rgba(0,0,0,0.35);
+  --result-bg: #1e1e1e;
+}
+
+
+
+/* Smooth transitions */
+body, .card, .premium-nav, .result, input, button, .btc-price-display {
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* ----------------------------------------------------
+   PREMIUM NAVBAR
+---------------------------------------------------- */
+.premium-nav {
+  width: 100%;
+  padding: 14px 40px;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 9999;
+
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 8px 32px rgba(0,0,0,0.20);
+  animation: navFade 0.9s ease-out;
+}
+
+@keyframes navFade {
+  from { opacity: 0; transform: translateY(-15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* BRAND AREA */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 120px;
+  width: auto;
+  object-fit: contain;
+  padding: 0; 
+  image-rendering: -webkit-optimize-contrast; 
+  margin: -25px 0; /* pulls the image outward to counter its internal padding */
+}
+
+
+.logo:hover {
+  transform: scale(1.07);
+  filter: drop-shadow(0 4px 6px rgba(255,215,0,0.55));
+}
+
+.tagline {
+  font-size: 0.72rem;
+  font-weight: 400;
+  opacity: 0.9;
+  letter-spacing: 0.4px;
+  color: #f8f8f8;
+  text-transform: uppercase;
+}
+
+/* CryptoIQ App Title */
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  line-height: 1.1;
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.app-subtitle {
+  font-size: 0.72rem;
+  opacity: 0.85;
+  color: #ffd700;
+  margin-top: 2px;
+}
+
+/* NAV LINKS */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.nav-links a {
+  color: #ffffff;
+  font-size: 1rem;
+  text-decoration: none;
+  letter-spacing: 0.4px;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* UNDERLINE EFFECT */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, #ffd700, #ffb300);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a:hover {
+  color: #ffd700;
+}
+/* ----------------------------------------------------
+   FIX NAV-RIGHT OVERFLOW (DOES NOT AFFECT LOGO)
+---------------------------------------------------- */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: nowrap;       /* prevent wrapping */
+  max-width: 65%;          /* keeps right items compact */
+  overflow: hidden;        /* prevents axis expansion */
+}
+
+.premium-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+/* Left side: logo + nav links */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Nav links beside logo */
+
+.nav-item {
+  font-size: 1.2rem;
+  color: #ffffff;        
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.nav-item:hover {
+  opacity: 1;              /* subtle hover, no color change */
+  text-decoration: underline;
+}
+
+
+/* Right side controls */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 👈 THIS creates space from Contact */
+}
+
+
+/* Prevent the price box from stretching navbar */
+.btc-price-display {
+  white-space: nowrap;
+}
+
+/* Mini chart container fix */
+.nav-right > div[style] {
+  min-width: 120px;
+}
+
+/* Make coin dropdown compact */
+.coin-dropdown {
+  min-width: 100px;
+}
+
+
+/* THEME TOGGLE */
+.theme-toggle {
+  width: 50px;
+  height: 37px;
+  display: flex;
+  justify-content: center;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text);
+  backdrop-filter: blur(6px);
+  transition: 0.25s ease;
+  gap: 14px;
+}
+
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* ----------------------------------------------------
+   LIVE PRICE DISPLAY
+---------------------------------------------------- */
+.btc-price-display {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  backdrop-filter: blur(8px);
+  font-size: 0.9rem;
+  transition: background 0.4s ease;
+}
+
+/* FLASH UP */
+.btc-price-display.up {
+  background: rgba(0,255,0,0.35);
+  animation: flashUp 0.6s ease;
+}
+
+@keyframes flashUp {
+  50% { transform: scale(1.12); }
+}
+
+/* FLASH DOWN */
+.btc-price-display.down {
+  background: rgba(255,0,0,0.35);
+  animation: flashDown 0.6s ease;
+}
+
+@keyframes flashDown {
+  50% { transform: scale(0.92); }
+}
+
+/* ----------------------------------------------------
+   COIN DROPDOWN
+---------------------------------------------------- */
+.coin-dropdown {
+  position: relative;
+  width: 120px;
+  cursor: pointer;
+}
+
+.selected-coin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: white;
+}
+
+.selected-coin img {
+  width: 20px;
+  height: 20px;
+}
+
+.coin-menu {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 140px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
+  display: none;
+  z-index: 9999;
+}
+
+.coin-dropdown:hover .coin-menu {
+  display: block;
+}
+
+.coin-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  color: white;
+  transition: background 0.2s ease;
+}
+
+.coin-option:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.coin-option img {
+  width: 20px;
+  height: 20px;
+}
+
+/* ----------------------------------------------------
+   DEV TEST BUTTONS
+---------------------------------------------------- */
+.test-flash-btn {
+  background: rgba(255,255,255,0.12);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 0.75rem;
+}
+
+.dev-hidden {
+  display: none;
+}
+
+/* ----------------------------------------------------
+   PREMIUM BUTTON
+---------------------------------------------------- */
+.upgrade-btn {
+  background: linear-gradient(135deg, #ffd700, #ffb300, #ff9900);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #222;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255,165,0,0.4);
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.upgrade-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 10px 22px rgba(255,165,0,0.55);
+}
+
+/* ----------------------------------------------------
+   MAIN APP LAYOUT
+---------------------------------------------------- */
+#root {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 180px 20px 40px;
+}
+
+.container {
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* ROTATING COINS */
+.coin-wrapper {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Force coins to appear above content but below navbar */
+.coin-wrapper {
+  position: fixed; 
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+  z-index: 9998;    /* just under navbar (9999) */
+  pointer-events: none;  
+}
+
+
+.btc-coin {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  opacity: 0.95;
+  animation: roll 4s linear infinite;
+}
+
+.coin1 { animation-duration: 4s; }
+.coin2 { animation-duration: 5s; }
+.coin3 { animation-duration: 3.5s; }
+
+.ad-box {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.ad-img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+@keyframes roll {
+  100% { transform: rotate(360deg); }
+}
+
+/* TITLES */
+h1 {
+  background: rgba(255,255,255,0.72);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #0a84ff;
+  padding: 15px 12px;
+  border-radius: 12px;
+}
+
+.sub {
+  background: rgba(223,192,12,0.72);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  margin: 6px 0 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #040404;
+}
+
+/* CARD */
+.card {
+  background: var(--card);
+  backdrop-filter: blur(6px);
+  padding: 25px 22px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+.card button {
+  outline: none;
+  border: none;
+  background: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.card button:hover {
+  background: #005fcc;
+}
+
+.card button:focus {
+  outline: none;
+  box-shadow: 0 0 8px 3px rgba(0, 123, 255, 0.6);
+}
+
+.card button:active {
+  transform: scale(0.98);
+}
+
+
+/* INPUTS */
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #d0d4dc;
+  text-align: center;
+  font-size: 15px;
+}
+
+input:focus {
+  border-color: #0a84ff;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0a84ff, #2563eb);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* RESULTS */
+.result {
+  background: var(--result-bg);
+  color: var(--text);
+  padding: 20px;
+  border-radius: 14px;
+  margin-top: 20px;
+}
+
+.info, footer {
+  background: var(--result-bg);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-top: 20px;
+}
+
+/* ----------------------------------------------------
+   CORRECTED NAV-RIGHT FIX (DROPDOWN + CHART WORKING)
+---------------------------------------------------- */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: nowrap;    
+  
+  /* NEW SAFE RULES */
+  overflow: visible;      /* dropdown can show */
+  max-width: none;        /* premium button + chart no longer squeezed */
+}
+
+/* Make sure price doesn't expand navbar */
+.btc-price-display {
+  white-space: nowrap;
+}
+
+/* Prevent chart from shrinking */
+.nav-right > div[style] {
+  min-width: 150px;
+}
+
+/* Keep dropdown compact but working */
+.coin-dropdown {
+  width: 120px;
+  overflow: visible;
+  position: relative;
+}
+
+.coin-menu {
+  z-index: 99999;      /* ensures dropdown overlays everything */
+}
+
+
+
+/* RESPONSIVE: safely preserved */
+@media (max-width: 880px) { .premium-nav { padding: 12px 24px; } }
+@media (max-width: 720px) {
+  .tagline { display: none; }
+  .logo { height: 34px; }
+}
+@media (max-width: 600px) {
+  .upgrade-btn { display: none; }
+  .logo { height: 30px; }
+}
+@media (max-width: 480px) {
+  .logo {
+    height: 90px;
+    margin: -15px 0;
+  }
+  .btc-coin { width: 90px; height: 90px; }
+  .coin-wrapper { right: 10px; gap: 12px; }
+}
+
+/* ---------------------------------
+   APP SHELL: NEWS (LEFT) + APP (CENTER)
+---------------------------------- */
+.app-shell {
+  width: 100%;
+  max-width: 100%;        /* gives room for news + app */
+  min-width: 100%;         /* prevents squish */
+  position: relative;
+}
+
+/* LEFT NEWS PANEL */
+.crypto-news {
+  position: absolute;
+  left: 40px;
+  top: 0;
+  margin-top: 90px;
+  width: 320px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 16px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  color: #111;
+  max-height: calc(100vh - 220px); /* respects navbar + root padding */
+  overflow: auto;
+}
+
+/* News title and list */
+.crypto-news .news-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.crypto-news .news-status {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.crypto-news .news-status.error {
+  color: #b91c1c;
+}
+
+.crypto-news .news-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.crypto-news .news-item {
+  padding: 10px 8px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.45);
+}
+
+.crypto-news .news-item a {
+  text-decoration: none;
+  color: #0a84ff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: block;
+  line-height: 1.25rem;
+}
+
+.crypto-news .news-item a:hover {
+  text-decoration: underline;
+}
+
+/* Keep your container centered */
+.app-shell .container {
+  flex: 1;
+  max-width: 450px; /* preserve your existing design width */
+}
+
+/* RESPONSIVE: stack on mobile */
+@media (max-width: 980px) {
+  .app-shell {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .crypto-news {
+    width: 100%;
+    max-width: 450px;
+    flex: unset;
+    max-height: unset;
+  }
+}
+@media (max-width: 980px) {
+  .crypto-news {
+    position: relative;
+    left: 0;
+    top: 0;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 450px;
+  }
+}
+
+.portfolio-box{
+  margin-top: 18px;
+  background: var(--card);
+  backdrop-filter: blur(6px);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: left;
+}
+
+.portfolio-title{
+  margin-bottom: 10px;
+  font-size: 1.05rem;
+}
+
+.portfolio-summary{
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.10);
+  margin-bottom: 12px;
+}
+
+.portfolio-form{
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.portfolio-form select,
+.portfolio-form input{
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d0d4dc;
+  text-align: center;
+  font-size: 15px;
+}
+
+.portfolio-form button{
+  width: 100%;
+}
+
+.portfolio-list{
+  display: grid;
+  gap: 8px;
+}
+
+.portfolio-item{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.12);
+}
+.profit-positive {
+  color: #00c853; /* green */
+  font-weight: 600;
+}
+
+.profit-negative {
+  color: #ff5252; /* red */
+  font-weight: 600;
+}
+.portfolio-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.portfolio-summary div {
+  transition: transform 0.2s ease;
+}
+
+.portfolio-summary div:hover {
+  transform: scale(1.03);
+}
+
+.portfolio-delete {
+  background: rgba(255, 0, 0, 0.15);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  color: #ff4d4f;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.portfolio-delete:hover {
+  background: rgba(255, 0, 0, 0.3);
+}
+.portfolio-item {
+  position: relative;
+}
+
+.portfolio-item button {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.delete-btn {
+  background: rgba(255, 0, 0, 0.15);
+  color: #ff5252;
+  border: none;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 0, 0, 0.3);
+}
+/* Portfolio container */
+.portfolio-box {
+  background: var(--card);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* Each holding row */
+.portfolio-item {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.portfolio-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.14);
+}
+.portfolio-item input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.portfolio-item input:focus {
+  outline: none;
+  border-color: #0a84ff;
+}
+.portfolio-item button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.portfolio-item button:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.05);
+}
+
+/* Delete emphasis */
+.portfolio-delete:hover {
+  background: rgba(255,0,0,0.25);
+}
+.portfolio-msg {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  text-align: center;
+}
+
+.portfolio-list p {
+  text-align: center;
+  padding: 10px;
+}
+@media (max-width: 480px) {
+  .portfolio-item {
+    grid-template-columns: 1fr 1fr auto auto;
+    font-size: 0.8rem;
+  }
+
+  .portfolio-item span:first-child {
+    grid-column: 1 / -1;
+    font-weight: 700;
+  }
+}
+/* ===== Contact Modal ===== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-card {
+  background: var(--card);
+  color: var(--text);
+  padding: 22px;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+  position: relative;
+  text-align: center;
+}
+
+.modal-card h2 {
+  margin-bottom: 10px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text);
+}
+.modal-close:hover {
+  color: #ff4d4f;
+}

@@ -1,0 +1,74 @@
+/* -----------------------------------------------------
+   GLOBAL BASELINE STYLES FOR CRYPTOIQ (index.css)
+------------------------------------------------------*/
+
+/* Universal Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Smooth Font Rendering */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+/* Body baseline */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Remove default link styles */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Button baseline */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+/* Input baseline */
+input,
+select,
+textarea {
+  font-family: inherit;
+  outline: none;
+}
+
+/* Prevent image dragging ghost effect */
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Root defaults without overriding App.css themes */
+:root {
+  --font-base: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+/* System-based light/dark preference (does NOT override your theme toggle) */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  html {
+    color-scheme: light;
+  }
+}
