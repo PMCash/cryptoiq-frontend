@@ -1115,3 +1115,103 @@ button {
     transform: translateY(-100%);
   }
 }
+@media (max-width: 768px) {
+  .upgrade-btn {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 28px);
+    max-width: 420px;
+    z-index: 50;
+
+    font-size: 1rem;
+    padding: 14px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+}
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Home / Tools / Contact hide */
+  }
+
+  .brand-text p {
+    display: none; /* hide subtitle */
+  }
+}
+@media (max-width: 768px) {
+  .main-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .crypto-news {
+    order: 1;
+  }
+
+  .container {
+    order: 2;
+  }
+
+  .portfolio-box {
+    order: 3;
+  }
+}
+@media (max-width: 768px) {
+  .card input,
+  .card button {
+    font-size: 1rem;
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .card button {
+    margin-top: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .coin-menu {
+    max-height: 260px;
+    overflow-y: auto;
+    width: 100%;
+    right: 0;
+    left: auto;
+  }
+}
+@media (max-width: 768px) {
+  .news-item a {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    display: block;
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    padding-bottom: 120px;
+  }
+}
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 110px; /* space for premium button */
+  }
+}
+@media (max-width: 768px) {
+  .mobile-auth-zone {
+    position: relative;
+    z-index: 20;
+    margin-bottom: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .upgrade-btn {
+    position: fixed;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 28px);
+    max-width: 420px;
+    z-index: 30; /* below modals, above content */
+  }
+}

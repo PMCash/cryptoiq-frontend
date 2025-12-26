@@ -362,6 +362,14 @@ const toggleTheme = () => {
 {/* Wallet Connect Button */}
 {FEATURES.wallet && <WalletButton />}
 
+<div className="mobile-auth-zone">
+  <WalletButton />
+  {!user ? (
+    <button onClick={handleLogin}>Sign In</button>
+  ) : (
+    <button onClick={handleLogout}>Logout</button>
+  )}
+</div>
 
 {/* Premium / Upgrade button */}
 <button
