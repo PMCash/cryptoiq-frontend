@@ -66,6 +66,7 @@ function App() {
   ads: true,
   extraCoins: false,
 };
+  const [hideHeader, setHideHeader] = useState(false);
   const [amount, setAmount] = useState("");
   const [buy, setBuy] = useState("");
   const [sell, setSell] = useState("");
@@ -129,6 +130,22 @@ useEffect(() => {
   document.body.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
 }, [theme]);
+
+useEffect(() => {
+  let lastScrollY = window.scrollY;
+
+  const onScroll = () => {
+    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+      setHideHeader(true);
+    } else {
+      setHideHeader(false);
+    }
+    lastScrollY = window.scrollY;
+  };
+
+  window.addEventListener("scroll", onScroll);
+  return () => window.removeEventListener("scroll", onScroll);
+}, []);
 
 // Toggle theme
 const toggleTheme = () => {
@@ -253,7 +270,7 @@ const toggleTheme = () => {
   return (
     <>
       {/* PREMIUM NAVBAR */}
-      <nav className="premium-nav">
+      <nav className={`premium-nav ${hideHeader ? "nav-hidden" : ""}`}>
 
         {/* BRAND SECTION */}
         <div className="brand">

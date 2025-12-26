@@ -1090,3 +1090,28 @@ button {
   }
 
 }
+/* MOBILE CONTENT OFFSET */
+@media (max-width: 768px) {
+  .container {
+    padding-top: 240px; /* space for mobile header */
+  }
+}
+@media (max-width: 768px) {
+  .premium-nav {
+    padding: 12px 10px;
+  }
+
+  .btc-price-display {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+}
+@media (max-width: 768px) {
+  .premium-nav {
+    transition: transform 0.3s ease;
+  }
+
+  .premium-nav.nav-hidden {
+    transform: translateY(-100%);
+  }
+}
