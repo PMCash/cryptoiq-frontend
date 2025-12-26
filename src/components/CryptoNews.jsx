@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 
+const BACKEND = import.meta.env.VITE_BACKEND_URL;
+
 export default function CryptoNews() {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    let isMounted = true; // safety guard
+    let isMounted = true;
 
     const fetchNews = async () => {
       try {
-        const res = await fetch("https://api.coingecko.com/api/v3/news");
+        const res = await fetch(`${BACKEND}/news`);
         const data = await res.json();
 
         if (!isMounted) return;
 
-        // Take only first 6 headlines
-        setNews(data?.data?.slice(0, 6) || []);
+        setNews(data || []);
       } catch (err) {
         console.error("Crypto news fetch failed:", err);
         if (isMounted) setError(true);
@@ -27,11 +28,10 @@ export default function CryptoNews() {
 
     fetchNews();
 
-    
     return () => {
       isMounted = false;
     };
-  }, []); // 👈 RUNS ONLY ONCE (NO CASCADE)
+  }, []);
 
   return (
     <aside className="crypto-news">
@@ -49,11 +49,7 @@ export default function CryptoNews() {
         <ul className="news-list">
           {news.map((item, index) => (
             <li key={index} className="news-item">
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 {item.title}
               </a>
             </li>
