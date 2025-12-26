@@ -7,6 +7,8 @@ import WalletButton from "./components/WalletButton";
 import CryptoNews from "./components/CryptoNews";
 import Portfolio from "./components/Portfolio";
 
+const BACKEND = import.meta.env.VITE_BACKEND_URL;
+
 
 // Top 10 cryptos
 const coins = [
@@ -226,7 +228,7 @@ const toggleTheme = () => {
     setResult(null);
 
     try {
-      const response = await fetch("http://localhost:5001/calculate", {
+      const response = await fetch(`${BACKEND}/calculate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
