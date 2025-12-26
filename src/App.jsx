@@ -359,8 +359,12 @@ const toggleTheme = () => {
             </div>
           </div>
 
-{/* Wallet Connect Button */}
-{FEATURES.wallet && <WalletButton />}
+{/* Wallet Connect Button (DESKTOP ONLY) */}
+{FEATURES.wallet && (
+  <div className="wallet-desktop">
+    <WalletButton />
+  </div>
+)}
 
 <div className="mobile-auth-zone">
   <WalletButton />

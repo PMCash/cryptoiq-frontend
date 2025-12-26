@@ -1215,3 +1215,25 @@ button {
     z-index: 30; /* below modals, above content */
   }
 }
+/* Mobile only */
+@media (max-width: 768px) {
+  .wallet-desktop {
+    display: none !important;
+  }
+}
+/* Desktop wallet visible only on large screens */
+@media (max-width: 768px) {
+  .wallet-desktop {
+    display: none !important;
+  }
+}
+
+/* Mobile auth stack layout */
+@media (max-width: 768px) {
+  .mobile-auth-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+}
