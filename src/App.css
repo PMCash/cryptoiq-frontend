@@ -385,13 +385,19 @@ body, .card, .premium-nav, .result, input, button, .btc-price-display {
 /* ----------------------------------------------------
    MAIN APP LAYOUT
 ---------------------------------------------------- */
+
 #root {
   width: 100%;
   min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 180px 20px 40px;
+  padding: 20px;
+}
+@media (min-width: 769px) {
+  #root {
+    padding-top: 180px; /* desktop fixed navbar space */
+  }
 }
 
 .container {
@@ -586,6 +592,25 @@ button {
   z-index: 99999;      /* ensures dropdown overlays everything */
 }
 
+@media (max-width: 768px) {
+  .premium-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .brand {
+    justify-content: center;
+  }
+
+  .nav-right {
+    justify-content: center;
+    width: 100%;
+  }
+}
 
 
 /* RESPONSIVE: safely preserved */
@@ -942,180 +967,92 @@ button {
 .modal-close:hover {
   color: #ff4d4f;
 }
-/* =========================
-   MOBILE RESPONSIVE FIXES
-   ========================= */
+
+/* =========================================
+   CLEAN MOBILE LAYOUT — SINGLE SOURCE OF TRUTH
+   ========================================= */
 @media (max-width: 768px) {
 
-  /* NAVBAR */
-  .premium-nav {
-    flex-direction: column;
-    padding: 10px;
-    gap: 8px;
+  /* ---------- ROOT & BODY ---------- */
+  body {
+    padding-bottom: 100px; /* space for bottom premium button if present */
   }
 
-  .nav-links {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    font-size: 0.9rem;
-  }
-
-  .nav-right {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  /* MAIN LAYOUT */
-  .main-layout {
+  #root {
+    padding: 110px 12px 40px; /* header height + breathing space */
     display: block;
   }
 
-  /* NEWS PANEL */
-  .crypto-news {
+  /* ---------- NAVBAR ---------- */
+  .premium-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 100%;
-    margin-bottom: 16px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    z-index: 9999;
   }
 
-  .news-item a {
-    font-size: 0.9rem;
-    line-height: 1.4;
+  .nav-links {
+    display: none; /* hide Home / Tools / Contact */
   }
 
-  /* CENTER CONTENT */
-  .container {
-    width: 100%;
-    padding: 12px;
-  }
-
-  /* CARDS */
-  .card {
-    padding: 14px;
-  }
-
-  .card input {
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-
-  .card button {
-    font-size: 0.95rem;
-    padding: 12px;
-  }
-
-  /* RESULT BOX */
-  .result {
-    font-size: 0.9rem;
-  }
-
-  /* PORTFOLIO */
-  .portfolio-box {
-    width: 100%;
-    padding: 12px;
-  }
-
-  .portfolio-item {
-    font-size: 0.85rem;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* FLOATING COINS — HIDE ON MOBILE */
-  .btc-coin {
+  .brand-text .app-subtitle {
     display: none;
   }
 
-  /* ADS */
-  .ads-box {
+  .nav-right {
     width: 100%;
-    margin-top: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
-}
-.main-layout {
-  display: flex;
-  gap: 16px;
-}
-
-@media (max-width: 768px) {
-  .main-layout {
-    flex-direction: column;
+  /* ---------- MAIN CONTENT ---------- */
+  .container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
   }
-}
-@media (max-width: 768px) {
+
   h1 {
     font-size: 1.5rem;
   }
 
-  .app-title {
-    font-size: 1.2rem;
+  /* ---------- CARD / INPUTS ---------- */
+  .card {
+    padding: 16px;
   }
-}
-@media (max-width: 768px) {
 
-  /* PREMIUM BUTTON FIX */
-  .upgrade-btn {
-    display: block !important;
+  .card input {
+    font-size: 16px; /* prevents iOS zoom */
+  }
+
+  /* ---------- NEWS ---------- */
+  .crypto-news {
+    display: none;
+  }
+
+  /* ---------- FLOATING COINS ---------- */
+  .coin-wrapper {
+    display: none;
+  }
+
+  /* ---------- WALLET / AUTH ---------- */
+  .wallet-zone {
+    flex-direction: column;
     width: 100%;
-    max-width: 320px;
-    margin: 8px auto 0;
-    padding: 12px 16px;
-    font-size: 0.95rem;
-    text-align: center;
   }
 
-}
-@media (max-width: 768px) {
-
-  .nav-right {
+  .wallet-zone button {
     width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
   }
 
-}
-@media (max-width: 768px) {
-  .premium-nav {
-    overflow: visible;
-    height: auto;
-  }
-}
-@media (max-width: 768px) {
-
-  .upgrade-btn {
-    order: 99;
-  }
-
-}
-/* MOBILE CONTENT OFFSET */
-@media (max-width: 768px) {
-  .container {
-    padding-top: 240px; /* space for mobile header */
-  }
-}
-@media (max-width: 768px) {
-  .premium-nav {
-    padding: 12px 10px;
-  }
-
-  .btc-price-display {
-    font-size: 0.85rem;
-    padding: 6px 10px;
-  }
-}
-@media (max-width: 768px) {
-  .premium-nav {
-    transition: transform 0.3s ease;
-  }
-
-  .premium-nav.nav-hidden {
-    transform: translateY(-100%);
-  }
-}
-@media (max-width: 768px) {
+  /* ---------- PREMIUM BUTTON ---------- */
   .upgrade-btn {
     position: fixed;
     bottom: 14px;
@@ -1124,135 +1061,52 @@ button {
     width: calc(100% - 28px);
     max-width: 420px;
     z-index: 50;
-
-    font-size: 1rem;
-    padding: 14px;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   }
 }
+/* =========================================
+   MOBILE SPACING POLISH — FINAL
+   ========================================= */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none; /* Home / Tools / Contact hide */
+
+  /* Push content fully below fixed header */
+  #root {
+    padding-top: 280px;   /* ⬅️ THIS is the key fix */
+    padding-bottom: 140px; /* space for premium button + scroll comfort */
   }
 
-  .brand-text p {
-    display: none; /* hide subtitle */
-  }
-}
-@media (max-width: 768px) {
-  .main-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .crypto-news {
-    order: 1;
-  }
-
+  /* Give calculator breathing room */
   .container {
-    order: 2;
+    margin-top: 20px;
   }
 
-  .portfolio-box {
-    order: 3;
-  }
-}
-@media (max-width: 768px) {
-  .card input,
-  .card button {
-    font-size: 1rem;
-    padding: 14px;
-    border-radius: 12px;
+  /* Improve vertical rhythm */
+  h1 {
+    margin-bottom: 12px;
   }
 
-  .card button {
-    margin-top: 10px;
+  .sub {
+    margin-bottom: 28px;
   }
 }
-@media (max-width: 768px) {
-  .coin-menu {
-    max-height: 260px;
-    overflow-y: auto;
-    width: 100%;
-    right: 0;
-    left: auto;
-  }
-}
-@media (max-width: 768px) {
-  .news-item a {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    display: block;
-  }
-}
-@media (max-width: 768px) {
-  .container {
-    padding-bottom: 120px;
-  }
-}
-@media (max-width: 768px) {
-  body {
-    padding-bottom: 110px; /* space for premium button */
-  }
-}
-@media (max-width: 768px) {
-  .mobile-auth-zone {
-    position: relative;
-    z-index: 20;
-    margin-bottom: 20px;
-  }
-}
+/* ===============================
+   MOBILE PREMIUM CTA — RESTORE
+   =============================== */
 @media (max-width: 768px) {
   .upgrade-btn {
+    margin-top: 30px; /* pushes it down a bit */
     position: fixed;
-    bottom: 14px;
+    bottom: -30px;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 28px);
+    width: calc(100% - 32px);
     max-width: 420px;
-    z-index: 30; /* below modals, above content */
-  }
-}
-/* Mobile only */
-@media (max-width: 768px) {
-  .wallet-desktop {
-    display: none !important;
-  }
-}
-/* Desktop wallet visible only on large screens */
-@media (max-width: 768px) {
-  .wallet-desktop {
-    display: none !important;
-  }
-}
 
-/* Mobile auth stack layout */
-@media (max-width: 768px) {
-  .mobile-auth-zone {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 12px;
-  }
-}
-@media (max-width: 768px) {
-  .upgrade-btn {
-    position: sticky;
-    bottom: 12px;
-    z-index: 5;
-    width: calc(100% - 24px);
-    margin: 12px auto;
-  }
-}
-@media (max-width: 768px) {
-  .premium-nav {
-    position: relative;
-  }
-}
-@media (max-width: 768px) {
-  .card input {
-    font-size: 16px; /* prevents iOS zoom */
+    display: block;
+    z-index: 20;
+
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   }
 }

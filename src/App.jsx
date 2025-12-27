@@ -92,7 +92,6 @@ function App() {
   
   // AUTH STATE (Supabase)
   const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const isPremiumUser = userRole === "premium" && FEATURES.premium;
 
@@ -162,8 +161,6 @@ const toggleTheme = () => {
     } else {
       setUser(data.session?.user ?? null);
     }
-
-    setAuthLoading(false);
   };
 
   getSession();
@@ -359,21 +356,21 @@ const toggleTheme = () => {
             </div>
           </div>
 
-{/* Wallet Connect Button (DESKTOP ONLY) */}
 {FEATURES.wallet && (
-  <div className="wallet-desktop">
+  <div className="wallet-zone">
     <WalletButton />
+
+    {!user ? (
+      <button className="auth-btn" onClick={handleLogin}>
+        Sign In
+      </button>
+    ) : (
+      <button className="auth-btn" onClick={handleLogout}>
+        Logout
+      </button>
+    )}
   </div>
 )}
-
-<div className="mobile-auth-zone">
-  <WalletButton />
-  {!user ? (
-    <button onClick={handleLogin}>Sign In</button>
-  ) : (
-    <button onClick={handleLogout}>Logout</button>
-  )}
-</div>
 
 {/* Premium / Upgrade button */}
 <button
@@ -394,48 +391,6 @@ const toggleTheme = () => {
   {userRole === "premium" ? "ChainIQ Pro ✓" : "Get Premium ChainIQ Pro"}
 </button>
 
-        
-
-{/* AUTH + WALLET SECTION */}
-{!authLoading && (
-  <div style={{ marginLeft: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
-
-
-    {/* Email Login / Logout */}
-    {user ? (
-      <button
-        style={{
-          padding: "6px 10px",
-          borderRadius: "8px",
-          border: "1px solid rgba(255,255,255,0.4)",
-          background: "transparent",
-          color: "#fff",
-          cursor: "pointer",
-          fontSize: "0.8rem",
-        }}
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
-    ) : (
-      <button
-        style={{
-          padding: "6px 10px",
-          borderRadius: "8px",
-          border: "1px solid rgba(255,255,255,0.4)",
-          background: "transparent",
-          color: "#fff",
-          cursor: "pointer",
-          fontSize: "0.8rem",
-        }}
-        onClick={handleLogin}
-      >
-        Sign In
-      </button>
-    )}
-  </div>
-)}
-
 
         </div>
       </nav>
@@ -447,12 +402,15 @@ const toggleTheme = () => {
      </div>
 
 
-      {/* MAIN CONTENT */}
-      <div className="main-layout" />
+      {/* MAIN CONTENT GRID*/}
+      <div className="layout-grid" />
+
       {/* Left ASIDE - Crypto News */}
+      <aside className="left-aside">
       <CryptoNews />
+      </aside>
       
-      {/* CENTER CONTENT */}
+      {/* CENTER COLUMN CONTENT */}
       <div className="container">
         <h1>Crypto Wealth Manager</h1>
         <p className="sub">
