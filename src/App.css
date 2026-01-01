@@ -1076,7 +1076,7 @@ button {
 
   /* Give calculator breathing room */
   .container {
-    margin-top: 20px;
+    margin-top: 40px;
   }
 
   /* Improve vertical rhythm */
@@ -1118,7 +1118,7 @@ button {
 /* Mobile extra breathing room */
 @media (max-width: 768px) {
   .container {
-    margin-bottom: 120px;
+    margin-bottom: 160px;
   }
 }
 /* Result reveal animation */
