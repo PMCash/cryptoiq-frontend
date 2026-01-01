@@ -72,6 +72,7 @@ function App() {
   const [sell, setSell] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const [btcPrice, setBtcPrice] = useState(null);
   const [lastPrice, setLastPrice] = useState(null);
@@ -79,6 +80,7 @@ function App() {
   const [history, setHistory] = useState([]);
   const [btcChange24h, setBtcChange24h] = useState(null);
   const [showContact, setShowContact] = useState(false);
+  const [toast, setToast] = useState("");
 
   const [theme, setTheme] = useState(() => {
   return localStorage.getItem("theme") || "light";
@@ -93,7 +95,6 @@ function App() {
   // AUTH STATE (Supabase)
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  const isPremiumUser = userRole === "premium" && FEATURES.premium;
 
   console.log("User role:", userRole);
   const handleLogin = async () => {
@@ -240,6 +241,7 @@ const toggleTheme = () => {
   const calculate = async () => {
     setError("");
     setResult(null);
+    setIsCalculating(true);
 
     try {
       const response = await fetch(`${BACKEND}/calculate`, {
@@ -258,6 +260,8 @@ const toggleTheme = () => {
       setResult(data);
     } catch {
       setError("Backend not reachable.");
+    } finally {
+      setIsCalculating(false);
     }
   };
 
@@ -376,15 +380,18 @@ const toggleTheme = () => {
 <button
   className="upgrade-btn"
   onClick={() => {
-    if (!isPremiumUser){
-      alert("Sign-in/Sign-up first to upgrade to ChainIQ Pro.");
+    if (!user){
+      setToast("Please sign in to upgrade to ChainIQ Pro.");
+      setTimeout(() => setToast(""), 3000);
       return;
     }
 
     if (userRole === "premium") {
-      alert("You already have ChainIQ Pro ✓");
+      setToast("You already have ChainIQ Pro ✓");
+      setTimeout(() => setToast(""), 3000);
     } else {
-      alert("Upgrade flow coming soon. For now, contact TechStudio24 support to upgrade your account.");
+      setToast("Upgrade flow coming soon. For now, contact TechStudio24 support to upgrade your account.");
+      setTimeout(() => setToast(""), 3500);
     }
   }}
 >
@@ -437,7 +444,7 @@ const toggleTheme = () => {
             onChange={e => setSell(e.target.value)}
           />
 
-          <button onClick={calculate}>CALCULATE PROFIT</button>
+          <button onClick={calculate} disabled={isCalculating}> {isCalculating ? "Calculating..." : "CALCULATE PROFIT"}</button>
 
           {error && <p className="error">{error}</p>}
         </div>
@@ -489,6 +496,11 @@ const toggleTheme = () => {
         Powered by TechStudio24-365
       </p>
     </div>
+  </div>
+)}
+{toast && (
+  <div className="toast">
+    {toast}
   </div>
 )}
 
