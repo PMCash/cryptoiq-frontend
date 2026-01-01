@@ -73,7 +73,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [isCalculating, setIsCalculating] = useState(false);
-
+  
   const [btcPrice, setBtcPrice] = useState(null);
   const [lastPrice, setLastPrice] = useState(null);
   const [priceFlash, setPriceFlash] = useState("");
@@ -81,6 +81,8 @@ function App() {
   const [btcChange24h, setBtcChange24h] = useState(null);
   const [showContact, setShowContact] = useState(false);
   const [toast, setToast] = useState("");
+  
+
 
   const [theme, setTheme] = useState(() => {
   return localStorage.getItem("theme") || "light";
@@ -95,7 +97,7 @@ function App() {
   // AUTH STATE (Supabase)
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
-
+  const isAuthReady = userRole !== null;
   console.log("User role:", userRole);
   const handleLogin = async () => {
   const email = window.prompt("Enter your email to sign in:");
@@ -255,7 +257,10 @@ const toggleTheme = () => {
       });
 
       const data = await response.json();
-      if (data.error) return setError(data.error);
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
 
       setResult(data);
     } catch {
@@ -379,13 +384,14 @@ const toggleTheme = () => {
 {/* Premium / Upgrade button */}
 <button
   className="upgrade-btn"
+  disabled={!isAuthReady}
   onClick={() => {
     if (!user){
       setToast("Please sign in to upgrade to ChainIQ Pro.");
       setTimeout(() => setToast(""), 3000);
       return;
     }
-
+     
     if (userRole === "premium") {
       setToast("You already have ChainIQ Pro ✓");
       setTimeout(() => setToast(""), 3000);
@@ -395,7 +401,11 @@ const toggleTheme = () => {
     }
   }}
 >
-  {userRole === "premium" ? "ChainIQ Pro ✓" : "Get Premium ChainIQ Pro"}
+  {!isAuthReady
+    ? "Checking account..."
+    : userRole === "premium"
+      ? "ChainIQ Pro ✓"
+      : "Get Premium ChainIQ Pro"}
 </button>
 
 
@@ -444,7 +454,11 @@ const toggleTheme = () => {
             onChange={e => setSell(e.target.value)}
           />
 
-          <button onClick={calculate} disabled={isCalculating}> {isCalculating ? "Calculating..." : "CALCULATE PROFIT"}</button>
+        <button 
+          onClick={calculate} disabled={isCalculating || !amount || !buy || !sell}
+          > 
+          {isCalculating ? "Calculating..." : "CALCULATE PROFIT"}
+          </button>
 
           {error && <p className="error">{error}</p>}
         </div>
@@ -461,13 +475,16 @@ const toggleTheme = () => {
         {FEATURES.ads && userRole !== "premium" && <Ads />}
 
         {user && <Portfolio />}
-        {!user && <p className="info">Sign in to track your portfolio.</p>}
+        {!user && (
+          <p className="info">
+          Sign in to track your portfolio.</p>)}
 
 
 
         <p className="info">World's best crypto-investment Hub.</p>
         <p className="info">Background image by Stockcake.</p>  
-        <footer>© 2025 TechStudio24-365</footer>
+        <footer>
+          © 2025 TechStudio24-365 .secure .No Finacial advice</footer>
       </div>
       {showContact && (
   <div className="modal-overlay" onClick={() => setShowContact(false)}>
