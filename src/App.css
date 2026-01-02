@@ -1119,6 +1119,7 @@ button {
 @media (max-width: 768px) {
   .container {
     margin-bottom: 200px;
+    margin-top: 120px;
   }
 }
 /* Result reveal animation */
