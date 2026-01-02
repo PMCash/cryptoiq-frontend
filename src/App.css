@@ -1118,7 +1118,7 @@ button {
 /* Mobile extra breathing room */
 @media (max-width: 768px) {
   .container {
-    margin-bottom: 160px;
+    margin-bottom: 200px;
   }
 }
 /* Result reveal animation */
