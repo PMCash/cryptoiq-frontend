@@ -83,6 +83,7 @@ function App() {
   const [toast, setToast] = useState("");
   const [showAuth, setShowAuth] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
+  const isMobile = window.innerWidth < 768;
 
 
 
@@ -376,7 +377,13 @@ const toggleTheme = () => {
 
 {FEATURES.wallet && (
   <div className="wallet-zone">
-    <WalletButton />
+    {!isMobile ? (
+      <WalletButton />
+    ) : (
+      <button className="auth-btn" disabled>
+        Connect Wallet (Use Desktop,..mobile version coming soon!)
+      </button>
+    )} 
 
     {!user ? (
       <button className="auth-btn" onClick={() => setShowAuth(true)}>
