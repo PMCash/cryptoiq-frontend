@@ -81,7 +81,9 @@ function App() {
   const [btcChange24h, setBtcChange24h] = useState(null);
   const [showContact, setShowContact] = useState(false);
   const [toast, setToast] = useState("");
-  
+  const [showAuth, setShowAuth] = useState(false);
+  const [authEmail, setAuthEmail] = useState("");
+
 
 
   const [theme, setTheme] = useState(() => {
@@ -100,16 +102,26 @@ function App() {
   const isAuthReady = userRole !== null;
   console.log("User role:", userRole);
   const handleLogin = async () => {
-  const email = window.prompt("Enter your email to sign in:");
-    if (!email) return;
-
-  const { error } = await supabase.auth.signInWithOtp({ email });
-    if (error) {
-      alert("Error sending login link: " + error.message);
-    } else {
-      alert("Check your email for a magic login link.");
+    if (!authEmail) {
+       setToast("Please enter your email.");
+       return;
     }
-  };
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: authEmail,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+     });
+
+     if (error) {
+       setToast(error.message);
+     } else {
+       setToast("Check your email for the login link.");
+       setShowAuth(false);
+       setAuthEmail("");
+     }
+    };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -269,12 +281,9 @@ const toggleTheme = () => {
       setIsCalculating(false);
     }
   };
-
-  // -----------------------------
-  // RENDER
-  // -----------------------------
-  return (
-    <>
+  
+ return(
+   <>
       {/* PREMIUM NAVBAR */}
       <nav className={`premium-nav ${hideHeader ? "nav-hidden" : ""}`}>
 
@@ -370,7 +379,7 @@ const toggleTheme = () => {
     <WalletButton />
 
     {!user ? (
-      <button className="auth-btn" onClick={handleLogin}>
+      <button className="auth-btn" onClick={() => setShowAuth(true)}>
         Sign In
       </button>
     ) : (
@@ -491,15 +500,15 @@ const toggleTheme = () => {
     <div
       className="modal-card"
       onClick={(e) => e.stopPropagation()}
-    >
+      >
       <button
         className="modal-close"
         onClick={() => setShowContact(false)}
       >
         ✕
-      </button>
-
-      <h2>Contact CryptoIQ</h2>
+      </button>  
+      
+            <h2>Contact CryptoIQ</h2>
 
       <p>
         For support, feedback, or partnerships:
@@ -515,6 +524,34 @@ const toggleTheme = () => {
     </div>
   </div>
 )}
+{showAuth && (
+  <div className="modal-overlay" onClick={() => setShowAuth(false)}>
+    <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <button className="modal-close" onClick={() => setShowAuth(false)}>
+        ✕
+      </button>
+
+      <h2>Sign in to CryptoIQ</h2>
+
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={authEmail}
+        onChange={(e) => setAuthEmail(e.target.value)}
+        style={{ marginTop: "12px" }}
+      />
+
+      <button style={{ marginTop: "14px" }} onClick={handleLogin}>
+        Send Login Link
+      </button>
+
+      <p style={{ marginTop: "10px", fontSize: "0.85rem", opacity: 0.8 }}>
+        We’ll send you a secure sign-in link.
+      </p>
+    </div>
+  </div>
+)}
+
 {toast && (
   <div className="toast">
     {toast}
