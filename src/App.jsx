@@ -6,6 +6,9 @@ import { supabase } from "./lib/supabaseClient";
 import WalletButton from "./components/WalletButton";
 import CryptoNews from "./components/CryptoNews";
 import Portfolio from "./components/Portfolio";
+import { Routes, Route } from "react-router-dom";
+import PaymentSuccess from "./pages/PaymentSuccess";
+
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
@@ -59,7 +62,7 @@ const premiumCoins = [
 ];
 
 
-function App() {
+function Home() {
   const FEATURES = {
   wallet: true,
   premium: false,
@@ -566,6 +569,14 @@ const toggleTheme = () => {
 )}
 
     </>
+  );
+}
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/payment-success" element={<PaymentSuccess />} />
+    </Routes>
   );
 }
 

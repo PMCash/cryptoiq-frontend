@@ -7,5 +7,7 @@
 			"path": "../../btc-growth-backend"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "btc-growth-backend"
+	}
 }
