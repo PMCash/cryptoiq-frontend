@@ -465,8 +465,8 @@ useEffect(() => {
       <WalletButton />
     ) : (
       <button className="auth-btn" disabled>
-        Connect Wallet (Use Desktop,..mobile version coming soon!)
-      </button>
+       {/* Connect Wallet */}
+       </button>
     )} 
 
     {!user ? (
