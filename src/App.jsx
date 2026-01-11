@@ -8,7 +8,9 @@ import CryptoNews from "./components/CryptoNews";
 import Portfolio from "./components/Portfolio";
 import { Routes, Route } from "react-router-dom";
 import PaymentSuccess from "./pages/PaymentSuccess";
-
+import PremiumGate from "./components/PremiumGate";
+import ChainIQPro from "./pages/ChainIQPro";
+import ChainIQProPreview from "./components/ChainIQProPreview";
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
@@ -87,6 +89,8 @@ function Home() {
   const [showAuth, setShowAuth] = useState(false);
   const [authEmail, setAuthEmail] = useState("");
   const isMobile = window.innerWidth < 768;
+  const [currency, setCurrency] = useState("NGN");
+  const [upgradeLoading, setUpgradeLoading] = useState(false);
 
 
 
@@ -98,7 +102,7 @@ function Home() {
   
   const currentCoin =
   coins.find(c => c.id === selectedCoin) || coins[0];
-
+  
   
   // AUTH STATE (Supabase)
   const [user, setUser] = useState(null);
@@ -127,15 +131,52 @@ function Home() {
      }
     };
 
-  const handleLogout = async () => {
+    const handleLogout = async () => {
     await supabase.auth.signOut();
   };
+    const handleUpgrade = async () => {
+  try {
+    setUpgradeLoading(true);
 
- const baseCoins = coins;
+    const { data } = await supabase.auth.getSession();
+    const session = data.session;
 
-const availableCoins = FEATURES.extraCoins
-  ? [...baseCoins, ...premiumCoins]
-  : baseCoins;
+    if (!session) {
+      setToast("Please sign in to upgrade.");
+      setTimeout(() => setToast(""), 3000);
+      return;
+    }
+
+    const res = await fetch(`${BACKEND}/paystack/initialize`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ currency }),
+    });
+
+    const result = await res.json();
+
+    if (!result.authorization_url) {
+      throw new Error("Payment initialization failed");
+    }
+
+    window.location.href = result.authorization_url;
+  } catch (err) {
+    console.error(err);
+    setToast("Unable to start payment. Please try again.");
+    setTimeout(() => setToast(""), 3000);
+  } finally {
+    setUpgradeLoading(false);
+  }
+};
+
+     const availableCoins =
+  userRole === "premium"
+    ? [...coins, ...premiumCoins]
+    : coins;
+
 
 
 // -----------------------------
@@ -399,34 +440,47 @@ const toggleTheme = () => {
     )}
   </div>
 )}
+    {/* Currency Selector (only for free users) */}
+{user && userRole !== "premium" && (
+  <div className="currency-selector">
+    <select
+      value={currency}
+      onChange={(e) => setCurrency(e.target.value)}
+    >
+      <option value="NGN">₦ NGN</option>
+      <option value="USD">$ USD</option>
+    </select>
+  </div>
+)}
 
 {/* Premium / Upgrade button */}
 <button
   className="upgrade-btn"
-  disabled={!isAuthReady}
+  disabled={!isAuthReady || upgradeLoading}
   onClick={() => {
-    if (!user){
+    if (!user) {
       setToast("Please sign in to upgrade to ChainIQ Pro.");
       setTimeout(() => setToast(""), 3000);
       return;
     }
-     
+
     if (userRole === "premium") {
       setToast("You already have ChainIQ Pro ✓");
       setTimeout(() => setToast(""), 3000);
-    } else {
-      setToast("Upgrade flow coming soon. For now, contact TechStudio24 support to upgrade your account.");
-      setTimeout(() => setToast(""), 3500);
+      return;
     }
+
+    handleUpgrade();
   }}
 >
   {!isAuthReady
     ? "Checking account..."
-    : userRole === "premium"
-      ? "ChainIQ Pro ✓"
-      : "Get Premium ChainIQ Pro"}
+    : upgradeLoading
+      ? "Redirecting to payment..."
+      : userRole === "premium"
+        ? "ChainIQ Pro ✓"
+        : "Get Premium ChainIQ Pro"}
 </button>
-
 
         </div>
       </nav>
@@ -449,6 +503,20 @@ const toggleTheme = () => {
       {/* CENTER COLUMN CONTENT */}
       <div className="container">
         <h1>Crypto Wealth Manager</h1>
+     {/* 🔒 CHAINIQ PRO SECTION */}
+     {userRole !== "premium" && (
+  <ChainIQProPreview onUpgrade={handleUpgrade} />
+)}
+
+    <PremiumGate
+      user={user}
+      userRole={userRole}
+      isAuthReady={isAuthReady}
+>
+      <ChainIQPro />
+    </PremiumGate>
+
+
         <p className="sub">
           {currentCoin ? `${currentCoin.symbol} • ${currentCoin.name}` : ""}
         </p>
@@ -575,9 +643,12 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+
       <Route path="/payment-success" element={<PaymentSuccess />} />
     </Routes>
   );
+
+  
 }
 
 export default App;
