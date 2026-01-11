@@ -9,7 +9,27 @@ export default function ChainIQProPreview({ onUpgrade }) {
         border: "1px solid rgba(255,255,255,0.15)"
       }}
     >
-      <h2>🚀 ChainIQ Pro</h2>
+      {/* Header with logo */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "10px"
+        }}
+      >
+        <img
+          src="/cryptoiq-logo.png"
+          alt="ChainIQ Pro"
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "6px"
+          }}
+        />
+        <h2 style={{ margin: 0 }}>ChainIQ Pro</h2>
+      </div>
+
       <p style={{ opacity: 0.85 }}>
         Unlock advanced analytics, premium coins, smart signals,
         and professional-grade crypto tools.

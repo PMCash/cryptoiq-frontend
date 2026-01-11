@@ -107,6 +107,7 @@ function Home() {
   // AUTH STATE (Supabase)
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  
   const isAuthReady = userRole !== null;
   console.log("User role:", userRole);
   const handleLogin = async () => {
@@ -143,7 +144,7 @@ function Home() {
 
     if (!session) {
       setToast("Please sign in to upgrade.");
-      setTimeout(() => setToast(""), 3000);
+      setUpgradeLoading(false);
       return;
     }
 
@@ -157,17 +158,18 @@ function Home() {
     });
 
     const result = await res.json();
+    console.log("paystack init response:", result);
 
-    if (!result.authorization_url) {
-      throw new Error("Payment initialization failed");
+    if (!res.ok || !result.authorization_url) {
+      throw new Error(result.error || "Payment initialization failed");
     }
 
-    window.location.href = result.authorization_url;
+    // Do not reset state after this
+    window.location.assign(result.authorization_url);
+
   } catch (err) {
     console.error(err);
     setToast("Unable to start payment. Please try again.");
-    setTimeout(() => setToast(""), 3000);
-  } finally {
     setUpgradeLoading(false);
   }
 };
@@ -213,42 +215,80 @@ const toggleTheme = () => {
 
 
   useEffect(() => {
-  const getSession = async () => {
+  let isMounted = true;
+
+  const loadSessionAndRole = async () => {
     const { data, error } = await supabase.auth.getSession();
 
     if (error) {
-      console.log("Auth session error:", error);
+      console.error("Auth session error:", error);
+      if (isMounted) setUserRole("free");
+      return;
+    }
+
+    const sessionUser = data.session?.user ?? null;
+
+    if (isMounted) setUser(sessionUser);
+
+    if (sessionUser) {
+      const { data: profile, error: roleError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", sessionUser.id)
+        .single();
+
+      if (isMounted) {
+        setUserRole(profile?.role ?? "free");
+      }
+
+      if (roleError) {
+        console.error("Role fetch error:", roleError);
+      }
     } else {
-      setUser(data.session?.user ?? null);
+      if (isMounted) setUserRole("free");
     }
   };
 
-  getSession();
+  loadSessionAndRole();
 
-  // Listen for login/logout
-  const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-    const user = session?.user ?? null;
-    setUser(user);
+  const { data: listener } = supabase.auth.onAuthStateChange(
+    async (_event, session) => {
+      const authUser = session?.user ?? null;
+      setUser(authUser);
 
-    // Load role
-    if (user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+      if (authUser) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", authUser.id)
+          .single();
 
-      setUserRole(profile?.role ?? "free");
-      console.log("User role:", profile?.role);
-    } else {
-      setUserRole("free");
+        setUserRole(profile?.role ?? "free");
+      } else {
+        setUserRole("free");
+      }
     }
-  });
+  );
 
   return () => {
+    isMounted = false;
     listener.subscription.unsubscribe();
   };
 }, []);
+
+// ------------------------------------
+// SAFETY NET: Prevent infinite auth wait
+// ------------------------------------
+useEffect(() => {
+  if (userRole === null) {
+    const timeout = setTimeout(() => {
+      console.warn("Auth role timeout — defaulting to free");
+      setUserRole("free");
+    }, 2500);
+
+    return () => clearTimeout(timeout);
+  }
+}, [userRole]);
 
   // -----------------------------
   // Fetch crypto price (Realtime ON/OFF)
