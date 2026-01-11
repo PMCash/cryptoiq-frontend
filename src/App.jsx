@@ -138,7 +138,9 @@ function Home() {
     const handleUpgrade = async () => {
   try {
     setUpgradeLoading(true);
+    setToast("Redirecting to payment...");
 
+   // Get active session
     const { data } = await supabase.auth.getSession();
     const session = data.session;
 
@@ -147,28 +149,32 @@ function Home() {
       setUpgradeLoading(false);
       return;
     }
-
-    const res = await fetch(`${BACKEND}/paystack/initialize`, {
+    
+    //Call backend (No currency trust)
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/paystack/initialize`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`,
+
+        // Country hint (backend still decides currency)
+        "X-Country": currency === "NGN" ? "NG" : "US",
       },
-      body: JSON.stringify({ currency }),
-    });
-
-    const result = await res.json();
-    console.log("paystack init response:", result);
-
-    if (!res.ok || !result.authorization_url) {
-      throw new Error(result.error || "Payment initialization failed");
     }
+);
 
-    // Do not reset state after this
-    window.location.assign(result.authorization_url);
+  const result = await res.json();
+  console.log("paystack init", result);
 
+  if (!res.ok || !result.authorization_url) {
+    throw new Error(result.error || "Payment initialization failed");
+  }
+
+    // Hard redirect (correct for paystack)
+    window.location.href = result.authorization_url;
   } catch (err) {
-    console.error(err);
+    console.error("Upgrade error:", err);
     setToast("Unable to start payment. Please try again.");
     setUpgradeLoading(false);
   }
@@ -178,13 +184,6 @@ function Home() {
   userRole === "premium"
     ? [...coins, ...premiumCoins]
     : coins;
-
-
-
-// -----------------------------
-// Theme initialization
-// -----------------------------
-
 
 // Keep DOM updated when theme changes
 useEffect(() => {
