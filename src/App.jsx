@@ -159,7 +159,7 @@ function Home() {
         Authorization: `Bearer ${session.access_token}`,
 
         // Country hint (backend still decides currency)
-        "X-Country": currency === "NGN" ? "NG" : "US",
+        "X-country": currency === "NGN" ? "NG" : "US",
       },
     }
 );
