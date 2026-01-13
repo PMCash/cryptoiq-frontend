@@ -4,58 +4,47 @@ const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
 export default function CryptoNews() {
   const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchNews = async () => {
+    const loadNews = async () => {
       try {
         const res = await fetch(`${BACKEND}/news`);
         const data = await res.json();
 
-        if (!isMounted) return;
+        if (!Array.isArray(data)) {
+          throw new Error("Invalid news response");
+        }
 
-        setNews(data || []);
+        setNews(data);
       } catch (err) {
-        console.error("Crypto news fetch failed:", err);
-        if (isMounted) setError(true);
-      } finally {
-        if (isMounted) setLoading(false);
+        console.error("CryptoNews error:", err);
+        setError("Unable to load crypto news");
       }
     };
 
-    fetchNews();
-
-    return () => {
-      isMounted = false;
-    };
+    loadNews();
   }, []);
 
+  if (error) return <p className="news-error">{error}</p>;
+
   return (
-    <aside className="crypto-news">
-      <h3 className="news-title">📰 CryptoIQ News</h3>
+    <div className="news-box">
+      <h3>Latest Crypto News</h3>
 
-      {loading && <p className="news-status">Loading latest news…</p>}
+      {news.length === 0 && <p>Loading news...</p>}
 
-      {error && (
-        <p className="news-status error">
-          Unable to load news at the moment.
-        </p>
-      )}
-
-      {!loading && !error && (
-        <ul className="news-list">
-          {news.map((item, index) => (
-            <li key={index} className="news-item">
-              <a href={item.link} target="_blank" rel="noopener noreferrer">
-                {item.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </aside>
+      {news.map((item, index) => (
+        <a
+          key={index}
+          href={item.link}
+          target="_blank"
+          rel="noreferrer"
+          className="news-item"
+        >
+          {item.title}
+        </a>
+      ))}
+    </div>
   );
 }

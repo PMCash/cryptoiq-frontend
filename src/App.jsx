@@ -536,7 +536,7 @@ useEffect(() => {
 
       {/* Left ASIDE - Crypto News */}
       <aside className="left-aside">
-      <CryptoNews />
+     <CryptoNews /> 
       </aside>
       
       {/* CENTER COLUMN CONTENT */}
