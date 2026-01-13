@@ -7,44 +7,49 @@ export default function CryptoNews() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadNews = async () => {
-      try {
-        const res = await fetch(`${BACKEND}/news`);
-        const data = await res.json();
-
+    fetch(`${BACKEND}/news`)
+      .then((res) => res.json())
+      .then((data) => {
         if (!Array.isArray(data)) {
-          throw new Error("Invalid news response");
+          throw new Error("Invalid response");
         }
-
         setNews(data);
-      } catch (err) {
-        console.error("CryptoNews error:", err);
+      })
+      .catch((err) => {
+        console.error("CryptoNews fetch error:", err);
         setError("Unable to load crypto news");
-      }
-    };
-
-    loadNews();
+      });
   }, []);
 
-  if (error) return <p className="news-error">{error}</p>;
-
   return (
-    <div className="news-box">
-      <h3>Latest Crypto News</h3>
+    <aside className="crypto-news">
+      <div className="news-title">Latest Crypto News</div>
 
-      {news.length === 0 && <p>Loading news...</p>}
+      {error && (
+        <div className="news-status error">
+          {error}
+        </div>
+      )}
 
-      {news.map((item, index) => (
-        <a
-          key={index}
-          href={item.link}
-          target="_blank"
-          rel="noreferrer"
-          className="news-item"
-        >
-          {item.title}
-        </a>
-      ))}
-    </div>
+      {!error && news.length === 0 && (
+        <div className="news-status">
+          Loading news…
+        </div>
+      )}
+
+      <ul className="news-list">
+        {news.map((item, index) => (
+          <li key={index} className="news-item">
+            <a
+              href={item.link}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {item.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </aside>
   );
 }
