@@ -7,19 +7,29 @@ export default function PaymentSuccess() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const finalize = async () => {
-      // Refresh session to pull updated role from DB
-      await supabase.auth.refreshSession();
+  const finalize = async () => {
+    // Ensure auth session exists
+    const { data } = await supabase.auth.getSession();
 
-      setStatus("success");
+    if (!data.session) {
+      // User not logged in — redirect safely
+      navigate("/", { replace: true });
+      return;
+    }
 
-      setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 2500);
-    };
+    // Force profile re-fetch by triggering auth state change
+    await supabase.auth.refreshSession();
 
-    finalize();
-  }, [navigate]);
+    setStatus("success");
+
+    // Short delay for UX
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 2500);
+  };
+
+  finalize();
+}, [navigate]);
 
   return (
     <div className="payment-status">
