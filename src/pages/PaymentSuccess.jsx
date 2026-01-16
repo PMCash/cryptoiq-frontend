@@ -1,35 +1,36 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function PaymentSuccess() {
   const [status, setStatus] = useState("verifying");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const reference = searchParams.get("reference");
 
   useEffect(() => {
-  const finalize = async () => {
-    // Ensure auth session exists
-    const { data } = await supabase.auth.getSession();
+    const finalize = async () => {
+      console.log("Paystack reference:", reference);
 
-    if (!data.session) {
-      // User not logged in — redirect safely
-      navigate("/", { replace: true });
-      return;
-    }
+      const { data } = await supabase.auth.getSession();
 
-    // Force profile re-fetch by triggering auth state change
-    await supabase.auth.refreshSession();
+      if (!data.session) {
+        navigate("/", { replace: true });
+        return;
+      }
 
-    setStatus("success");
+      // Refresh to pick up role updated by webhook
+      await supabase.auth.refreshSession();
 
-    // Short delay for UX
-    setTimeout(() => {
-      navigate("/", { replace: true });
-    }, 2500);
-  };
+      setStatus("success");
 
-  finalize();
-}, [navigate]);
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 2500);
+    };
+
+    finalize();
+  }, [navigate, reference]);
 
   return (
     <div className="payment-status">
