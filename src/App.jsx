@@ -91,6 +91,8 @@ function Home() {
   const isMobile = window.innerWidth < 768;
   const [currency, setCurrency] = useState("NGN");
   const [upgradeLoading, setUpgradeLoading] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
 
 
@@ -116,21 +118,51 @@ function Home() {
        return;
     }
 
+    setToast("Sending login code...");
+
     const { error } = await supabase.auth.signInWithOtp({
       email: authEmail,
       options: {
-        emailRedirectTo: window.location.origin,
+        shouldCreateUser: true,
       },
-     });
-
+    });
      if (error) {
-       setToast(error.message);
-     } else {
-       setToast("Check your email for the login link.");
-       setShowAuth(false);
-       setAuthEmail("");
+       console.error(error);
+        setToast(error.message);
+          return; 
      }
-    };
+       setOtpStep(true);
+       setToast("Enter the 6-digit code sent to your email.");
+     };
+
+   const handleVerifyOtp = async () => {
+  if (!otpCode || otpCode.length !== 6) {
+    setToast("Enter the 6-digit code.");
+    return;
+  }
+
+  setToast("Verifying code...");
+
+  const { error } = await supabase.auth.verifyOtp({
+    email: authEmail,
+    token: otpCode,
+    type: "email",
+  });
+
+  if (error) {
+    console.error("OTP verify error:", error);
+    setToast("Invalid code. Please try again.");
+    return;
+  }
+
+  // forced seession refresh
+  await supabase.auth.getSession();
+
+  setToast("Login successful 🎉");
+  setShowAuth(false);
+  setOtpStep(false);
+  setOtpCode("");
+};
 
     const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -658,13 +690,30 @@ useEffect(() => {
         style={{ marginTop: "12px" }}
       />
 
-      <button style={{ marginTop: "14px" }} onClick={handleLogin}>
-        Send Login Link
-      </button>
+      {!otpStep ? (
+  <>
 
-      <p style={{ marginTop: "10px", fontSize: "0.85rem", opacity: 0.8 }}>
-        We’ll send you a secure sign-in link.
-      </p>
+    <button style={{ marginTop: "14px" }} onClick={handleLogin}>
+      Send Code
+    </button>
+  </>
+) : (
+  <>
+    <input
+      type="text"
+      placeholder="Enter 6-digit code"
+      value={otpCode}
+      onChange={(e) => setOtpCode(e.target.value)}
+      maxLength={6}
+      style={{ marginTop: "12px" }}
+    />
+
+    <button style={{ marginTop: "14px" }} onClick={handleVerifyOtp}>
+      Verify Code
+    </button>
+  </>
+)}
+
     </div>
   </div>
 )}
