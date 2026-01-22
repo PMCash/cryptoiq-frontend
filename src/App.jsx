@@ -11,6 +11,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PremiumGate from "./components/PremiumGate";
 import ChainIQPro from "./pages/ChainIQPro";
 import ChainIQProPreview from "./components/ChainIQProPreview";
+import ComingSoonBanner from "./components/ComingSoonBanner";
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
@@ -156,7 +157,7 @@ function Home() {
   }
 
   // forced seession refresh
-  await supabase.auth.getSession();
+  await supabase.auth.refreshSession();
 
   setToast("Login successful 🎉");
   setShowAuth(false);
@@ -555,6 +556,8 @@ useEffect(() => {
 
         </div>
       </nav>
+ 
+  <ComingSoonBanner />
 
       <div className="coin-wrapper">
         <img src="/bitcoin.png" className="btc-coin coin1" />
