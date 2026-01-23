@@ -1,3 +1,5 @@
+import { Scale } from "chart.js";
+
 export default function ComingSoonBanner() {
   return (
     <div
@@ -16,17 +18,24 @@ export default function ComingSoonBanner() {
         fontSize: "14px",
         fontWeight: "500",
         zIndex: 9999,
-        pointerEvents: "auto",
+        pointerEvents: "auto",  
       }}
+      
     >
-      <span>Mobile Apps Coming Soon</span>
+      <span>Coming Soon!</span>
 
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
           <img
-            src="/ios-logo.svg"
+            src="/ios-logo.png"
             alt="iOS"
-            style={{ width: "18px", height: "18px" }}
+            style={{ width: "42px",
+                     height: "15px",
+                     transform: "scale(1.40) translateY(-0.5px)",
+                     transformOrigin: "center",
+                     display: "block",
+
+                     }}
           />
           <span>iOS</span>
         </div>

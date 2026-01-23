@@ -1180,27 +1180,3 @@ button:disabled {
   cursor: not-allowed;
   transform: none;
 }
-
-/* ComingSoonBanner.css */
-.coming-soon-banner {
-  background-color: #f8f9fa;
-  color: #333;
-  padding: 10px 20px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.banner-content {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.banner-logo {
-  width: 40px;
-  height: auto;
-  margin: 0 10px;
-}
