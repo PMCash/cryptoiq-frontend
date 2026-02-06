@@ -12,6 +12,8 @@ import PremiumGate from "./components/PremiumGate";
 import ChainIQPro from "./pages/ChainIQPro";
 import ChainIQProPreview from "./components/ChainIQProPreview";
 import ComingSoonBanner from "./components/ComingSoonBanner";
+import { useRef } from "react";
+
 
 const BACKEND = import.meta.env.VITE_BACKEND_URL;
 
@@ -68,7 +70,7 @@ const premiumCoins = [
 function Home() {
   const FEATURES = {
   wallet: true,
-  premium: false,
+  premium: false, // recommended for cleaning later XXXXXXXX
   ads: true,
   extraCoins: false,
 };
@@ -94,8 +96,9 @@ function Home() {
   const [upgradeLoading, setUpgradeLoading] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState("");
-
-
+  const homeRef = useRef(null);
+  const toolsRef = useRef(null);  
+  
 
   const [theme, setTheme] = useState(() => {
   return localStorage.getItem("theme") || "light";
@@ -108,11 +111,33 @@ function Home() {
   
   
   // AUTH STATE (Supabase)
+  const [plan, setPlan] = useState(null);
+  const [premiumExpiresAt, setPremiumExpiresAt] = useState(null);
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const hasProAccess = plan === "pro" || plan === "premium";
+  const hasPremiumAccess =
+    plan === "premium" &&
+    (!premiumExpiresAt || new Date(premiumExpiresAt) > new Date());
   
-  const isAuthReady = userRole !== null;
-  console.log("User role:", userRole);
+  // ------------------------------------
+// AUTO-DOWNGRADE EXPIRED PREMIUM (UI ONLY)
+// ------------------------------------
+useEffect(() => {
+  if (
+    plan === "premium" &&
+    premiumExpiresAt &&
+    new Date(premiumExpiresAt) <= new Date()
+  ) {
+    console.warn("Premium expired — downgrading to Pro (frontend)");
+
+    setPlan("pro");
+    setPremiumExpiresAt(null);
+  }
+}, [plan, premiumExpiresAt]);
+
+  
+  const isAuthReady = plan !== null;
+  console.log("User plan:", plan);
   const handleLogin = async () => {
     if (!authEmail) {
        setToast("Please enter your email.");
@@ -168,7 +193,13 @@ function Home() {
     const handleLogout = async () => {
     await supabase.auth.signOut();
   };
-    const handleUpgrade = async () => {
+    const handleUpgrade = async (planType) => {
+      // safety Gaurd.
+      if (!["pro", "premium"].includes(planType)) {
+        setToast("Invalid plan type.");
+        return;
+      }
+
   try {
     setUpgradeLoading(true);
     setToast("Redirecting to payment...");
@@ -194,7 +225,10 @@ function Home() {
         // Country hint (backend still decides currency)
         "X-country": currency === "NGN" ? "NG" : "US",
       },
-    }
+      body : JSON.stringify({ 
+        plan: planType, // pro or premium
+    }),
+  } 
 );
 
   const result = await res.json();
@@ -213,10 +247,9 @@ function Home() {
   }
 };
 
-     const availableCoins =
-  userRole === "premium"
-    ? [...coins, ...premiumCoins]
-    : coins;
+     const availableCoins = hasProAccess // To avoid showing premium coins to Pro users in dropdown in future updates, we can change this to hasPremiumAccess
+       ? [...coins, ...premiumCoins]
+       : coins;
 
 // Keep DOM updated when theme changes
 useEffect(() => {
@@ -254,7 +287,7 @@ const toggleTheme = () => {
 
     if (error) {
       console.error("Auth session error:", error);
-      if (isMounted) setUserRole("free");
+      if (isMounted) setPlan("free");
       return;
     }
 
@@ -265,19 +298,20 @@ const toggleTheme = () => {
     if (sessionUser) {
       const { data: profile, error: roleError } = await supabase
         .from("profiles")
-        .select("role")
+        .select("plan, premium_expires_at")
         .eq("id", sessionUser.id)
         .single();
 
       if (isMounted) {
-        setUserRole(profile?.role ?? "free");
+        setPlan(profile?.plan ?? "free");
+        setPremiumExpiresAt(profile?.premium_expires_at);
       }
 
       if (roleError) {
         console.error("Role fetch error:", roleError);
       }
     } else {
-      if (isMounted) setUserRole("free");
+      if (isMounted) setPlan("free");
     }
   };
 
@@ -291,13 +325,12 @@ const toggleTheme = () => {
       if (authUser) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("role")
+          .select("plan, premium_expires_at")
           .eq("id", authUser.id)
           .single();
 
-        setUserRole(profile?.role ?? "free");
-      } else {
-        setUserRole("free");
+        setPlan(profile?.plan ?? "free");
+        setPremiumExpiresAt(profile?.premium_expires_at);
       }
     }
   );
@@ -312,15 +345,15 @@ const toggleTheme = () => {
 // SAFETY NET: Prevent infinite auth wait
 // ------------------------------------
 useEffect(() => {
-  if (userRole === null) {
+  if (plan === null) {
     const timeout = setTimeout(() => {
       console.warn("Auth role timeout — defaulting to free");
-      setUserRole("free");
+      setPlan("free");
     }, 2500);
 
     return () => clearTimeout(timeout);
   }
-}, [userRole]);
+}, [plan]);
 
   // -----------------------------
   // Fetch crypto price (Realtime ON/OFF)
@@ -417,8 +450,23 @@ useEffect(() => {
           </div>
           {/* Nav Links - now beside logo */}
           <div className="nav-links">
-            <span className="nav-item active">Home</span>
-            <span className="nav-item active">Tools</span>
+            <span
+               className="nav-item active"
+               onClick={() =>
+                 homeRef.current?.scrollIntoView({ behavior: "smooth" })
+               }
+              >
+                Home
+              </span>
+
+              <span
+                className="nav-item active"
+                onClick={() =>
+                  toolsRef.current?.scrollIntoView({ behavior: "smooth" })
+               }
+              >
+                Tools
+              </span>
             <span className="nav-item" onClick={() => setShowContact(true)} >Contact </span>
           </div>
 
@@ -512,8 +560,8 @@ useEffect(() => {
     )}
   </div>
 )}
-    {/* Currency Selector (only for free users) */}
-{user && userRole !== "premium" && (
+    {/* Currency Selector (for all users) */}
+{user && (
   <div className="currency-selector">
     <select
       value={currency}
@@ -531,31 +579,35 @@ useEffect(() => {
   disabled={!isAuthReady || upgradeLoading}
   onClick={() => {
     if (!user) {
-      setToast("Please sign in to upgrade to ChainIQ Pro.");
+      setToast("Please sign in to upgrade.");
       setTimeout(() => setToast(""), 3000);
       return;
     }
 
-    if (userRole === "premium") {
-      setToast("You already have ChainIQ Pro ✓");
+    if (hasPremiumAccess) {
+      setToast("You already have Premium active✓");
       setTimeout(() => setToast(""), 3000);
       return;
     }
-
-    handleUpgrade();
+    // if user is already Pro --> offer Premium
+    handleUpgrade(hasProAccess ? "premium" : "pro");
   }}
 >
   {!isAuthReady
     ? "Checking account..."
     : upgradeLoading
       ? "Redirecting to payment..."
-      : userRole === "premium"
-        ? "ChainIQ Pro ✓"
-        : "Get Premium ChainIQ Pro"}
+      : hasPremiumAccess
+        ?"Premium Active"
+        : hasProAccess
+          ? "Upgrade to Premium ✓"
+          : "Get ChainIQ Pro"}
 </button>
 
         </div>
       </nav>
+
+<div id="home" />
  
   <ComingSoonBanner />
 
@@ -575,27 +627,20 @@ useEffect(() => {
       </aside>
       
       {/* CENTER COLUMN CONTENT */}
-      <div className="container">
+      <div ref={homeRef} className="container">
         <h1>Crypto Wealth Manager</h1>
      {/* 🔒 CHAINIQ PRO SECTION */}
-     {userRole !== "premium" && (
-  <ChainIQProPreview onUpgrade={handleUpgrade} />
+     {!hasPremiumAccess && (
+  <ChainIQProPreview onUpgrade={() => handleUpgrade("premium")} />
 )}
 
-    <PremiumGate
-      user={user}
-      userRole={userRole}
-      isAuthReady={isAuthReady}
->
-      <ChainIQPro />
-    </PremiumGate>
-
+    {hasProAccess && <ChainIQPro />}
 
         <p className="sub">
           {currentCoin ? `${currentCoin.symbol} • ${currentCoin.name}` : ""}
         </p>
 
-        <div className="card">
+        <div ref={toolsRef} className="card">
           <input
             type="number"
             placeholder="Amount Invested (USD)"
@@ -633,7 +678,7 @@ useEffect(() => {
           </div>
         )}
         {/* Ads disabled for premium users */}
-        {FEATURES.ads && userRole !== "premium" && <Ads />}
+        {FEATURES.ads && !hasPremiumAccess && <Ads />}
 
         {user && <Portfolio />}
         {!user && (

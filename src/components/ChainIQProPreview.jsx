@@ -55,7 +55,7 @@ export default function ChainIQProPreview({ onUpgrade }) {
           cursor: "pointer"
         }}
       >
-        Upgrade to ChainIQ Pro
+        Upgrade to Premium ChainIQ Pro
       </button>
     </div>
   );
