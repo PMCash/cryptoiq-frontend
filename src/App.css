@@ -1143,6 +1143,7 @@ button {
 }
 /* Toast notification */
 .toast {
+  pointer-events: none;
   position: fixed;
   bottom: 90px;
   left: 50%;
@@ -1152,7 +1153,8 @@ button {
   padding: 12px 18px;
   border-radius: 10px;
   font-size: 0.9rem;
-  z-index: 9999;
+  z-index: 1001;
+  isolation: isolate;
   animation: toastIn 0.3s ease;
 }
 

@@ -118,6 +118,19 @@ function Home() {
   const hasPremiumAccess =
     plan === "premium" &&
     (!premiumExpiresAt || new Date(premiumExpiresAt) > new Date());
+
+// ------------------------------------
+// SAFETY: Close auth modal once user is authenticated
+// ------------------------------------
+useEffect(() => {
+  if (user && showAuth) {
+    setShowAuth(false);
+    setOtpStep(false);
+    setOtpCode("");
+    setToast("");
+  }
+}, [user, showAuth]);
+
   
   // ------------------------------------
 // AUTO-DOWNGRADE EXPIRED PREMIUM (UI ONLY)
@@ -162,9 +175,9 @@ useEffect(() => {
      };
 
    const handleVerifyOtp = async () => {
-  if (!otpCode || otpCode.length !== 6) {
-    setToast("Enter the 6-digit code.");
-    return;
+     if (!otpCode || otpCode.length !== 6) {
+       setToast("Enter the 6-digit code.");
+      return;
   }
 
   setToast("Verifying code...");
@@ -185,9 +198,14 @@ useEffect(() => {
   await supabase.auth.refreshSession();
 
   setToast("Login successful 🎉");
+
+// give React a micro-breath before closing modal
+  setTimeout(() => {
   setShowAuth(false);
   setOtpStep(false);
   setOtpCode("");
+}, 200);
+
 };
 
     const handleLogout = async () => {
@@ -722,7 +740,14 @@ useEffect(() => {
   </div>
 )}
 {showAuth && (
-  <div className="modal-overlay" onClick={() => setShowAuth(false)}>
+  <div
+    className="modal-overlay"
+    onClick={() => {
+      // 🔐 Prevent closing modal during OTP verification step
+      if (!otpStep) setShowAuth(false);
+    }}
+  >
+
     <div className="modal-card" onClick={(e) => e.stopPropagation()}>
       <button className="modal-close" onClick={() => setShowAuth(false)}>
         ✕
